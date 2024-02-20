@@ -297,6 +297,8 @@ namespace Warehouse
             }
         }
 
+        /// Модуль 2. Частина 2
+
         void Insert()
         {
             Console.Clear();
@@ -343,7 +345,7 @@ namespace Warehouse
                     using (SqlConnection conn = new SqlConnection(StrConn))
                     {
                         conn.Open();
-                        var query = "USE Warehouse;  INSERT INTO Products(Name, Type, Quantity, PrimeCost, DateOfDelivery, ManufacturerId) VALUES(@name, @type, @quantity, @primecost, @date, @manid)";
+                        var query = "USE Warehouse;  INSERT INTO Products(Name, Type, Quantity, PrimeCost, DateOfDelivery, IdManufacturer) VALUES(@name, @type, @quantity, @primecost, @date, @manid)";
                         var cmd = new SqlCommand(query, conn);
                         cmd.Parameters.AddWithValue("@name",name);
                         cmd.Parameters.AddWithValue("@type", type);
@@ -373,17 +375,29 @@ namespace Warehouse
                 if(j == 2)
                 {
                     Console.Clear();
+                    Console.WriteLine("Insert New Manufacturer/n");
+
+                    Console.Write("Enter name of Manufacturer: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine();
+
+
                     using (SqlConnection conn = new SqlConnection(StrConn))
                     {
                         conn.Open();
-                        var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                        var query = "USE Warehouse;  INSERT INTO Manufacturers(Name) VALUES(@name)";
                         var cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.ExecuteNonQuery();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        var queryn = "SELECT * FROM Manufacturers";
+                        var cmd1 = new SqlCommand(queryn, conn);
+
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                                Console.WriteLine($"{reader["Id"]} {reader["Name"]}");
                             }
 
                         }
@@ -416,11 +430,73 @@ namespace Warehouse
                 j = Int32.Parse(Console.ReadLine());
                 if (j == 1)
                 {
+                    Console.Clear();
+                    Console.WriteLine("Delete Product/n");
 
+                    Console.Write("Enter name of product: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine();
+
+
+                    using (SqlConnection conn = new SqlConnection(StrConn))
+                    {
+                        conn.Open();
+                        var query = "USE Warehouse;  DELETE FROM Products WHERE Products.name = @name";
+                        var cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.ExecuteNonQuery();
+
+                        var queryn = "SELECT * FROM Products";
+                        var cmd1 = new SqlCommand(queryn, conn);
+
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Console.WriteLine($"{reader["Id"]} {reader["Name"]} {reader["Type"]} {reader["Quantity"]} {reader["PrimeCost"]} {reader["DateOfDelivery"]}");
+                            }
+
+                        }
+
+                        conn.Close();
+                        Console.ReadLine();
+                        Console.Clear();
+                    }
                 }
                 if (j == 2)
                 {
+                    Console.Clear();
+                    Console.WriteLine("Delete Manufacturer/n");
 
+                    Console.Write("Enter name of manufacturer: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine();
+
+
+                    using (SqlConnection conn = new SqlConnection(StrConn))
+                    {
+                        conn.Open();
+                        var query = "USE Warehouse;  DELETE FROM Manufacturers WHERE Manufacturers.name = @name";
+                        var cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.ExecuteNonQuery();
+
+                        var queryn = "SELECT * FROM Manufacturer";
+                        var cmd1 = new SqlCommand(queryn, conn);
+
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Console.WriteLine($"{reader["Id"]} {reader["Name"]}");
+                            }
+
+                        }
+
+                        conn.Close();
+                        Console.ReadLine();
+                        Console.Clear();
+                    }
                 }
                 if (j != 1 && j != 2)
                 {
@@ -446,17 +522,58 @@ namespace Warehouse
                 if (j == 1)
                 {
                     Console.Clear();
+                    Console.WriteLine("Update Product/n");
+
+                    Console.Write("Enter id of product: ");
+                    int id = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    Console.Write("Enter new name of product: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine();
+
+                    Console.Write("Enter new type of product: ");
+                    string type = Console.ReadLine();
+                    Console.WriteLine();
+
+                    Console.Write("Enter new quantity of product: ");
+                    int quantity = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    Console.Write("Enter new prime cost of product: ");
+                    SqlMoney primecost = SqlMoney.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    Console.Write("Enter new date of delivery of product: ");
+                    DateTime date = DateTime.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    Console.Write("Enter new manufacturerId of product: ");
+                    int manid = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
                     using (SqlConnection conn = new SqlConnection(StrConn))
                     {
                         conn.Open();
-                        var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                        var query = "USE Warehouse; UPDATE Products SET Name = @name, Type = @type, Quantity = @quantity, PrimeCost = @primecost, DateOfDelivery = @date, IdManufacturer =  @manid WHERE Products.id = @id";
                         var cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@type", type);
+                        cmd.Parameters.AddWithValue("@quantity", quantity);
+                        cmd.Parameters.AddWithValue("@primecost", primecost);
+                        cmd.Parameters.AddWithValue("@date", date);
+                        cmd.Parameters.AddWithValue("@manid", manid);
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.ExecuteNonQuery();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        var queryn = "SELECT * FROM Products";
+                        var cmd1 = new SqlCommand(queryn, conn);
+
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                                Console.WriteLine($"{reader["Id"]} {reader["Name"]} {reader["Type"]} {reader["Quantity"]} {reader["PrimeCost"]} {reader["DateOfDelivery"]}");
                             }
 
                         }
@@ -469,17 +586,34 @@ namespace Warehouse
                 if (j == 2)
                 {
                     Console.Clear();
+                    Console.WriteLine("UPDATE Manufacturer/n");
+
+                    Console.Write("Enter id of Manufacturer: ");
+                    int id = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+
+                    Console.Write("Enter new  name of Manufacturer: ");
+                    string name = Console.ReadLine();
+                    Console.WriteLine();
+
+
                     using (SqlConnection conn = new SqlConnection(StrConn))
                     {
                         conn.Open();
-                        var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                        var query = "USE Warehouse; UPDATE Manufacturers SET Manufacturers.Name = @name WHERE Manufcturers.id = @id";
                         var cmd = new SqlCommand(query, conn);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.ExecuteNonQuery();
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        var queryn = "SELECT * FROM Manufacturers";
+                        var cmd1 = new SqlCommand(queryn, conn);
+
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                                Console.WriteLine($"{reader["Id"]} {reader["Name"]}");
                             }
 
                         }
@@ -501,14 +635,14 @@ namespace Warehouse
             using (SqlConnection conn = new SqlConnection(StrConn))
             {
                 conn.Open();
-                var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                var query = "SELECT TOP 1 Manufacturers.Name , SUM(Products.Quantity) AS TotalQuantity FROM Products JOIN Manufacturers ON Products.IdManufacturer = Manufacturers.id GROUP BY Manufacturers.Name ORDER BY Products.Quantity DESC ;"; 
                 var cmd = new SqlCommand(query, conn);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                        Console.WriteLine($"{reader["Name"]} {reader["TotalQuantity"]}");
                     }
 
                 }
@@ -525,14 +659,14 @@ namespace Warehouse
             using (SqlConnection conn = new SqlConnection(StrConn))
             {
                 conn.Open();
-                var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                var query = "SELECT TOP 1 Manufacturers.Name , SUM(Products.Quantity) AS TotalQuantity FROM Products JOIN Manufacturers ON Products.IdManufacturer = Manufacturers.id GROUP BY Manufacturers.Name ORDER BY Products.Quantity;";
                 var cmd = new SqlCommand(query, conn);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                        Console.WriteLine($"{reader["Name"]} {reader["TotalQuantity"]}");
                     }
 
                 }
@@ -545,18 +679,18 @@ namespace Warehouse
 
         void DisplayLargestNumberProduct()
         {
-            Console.Clear();
+            Console.Clear(); 
             using (SqlConnection conn = new SqlConnection(StrConn))
             {
                 conn.Open();
-                var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                var query = "SELECT TOP 1 Products.Type, SUM(Products.Quantity) AS TotalQuantity FROM Products GROUP BY Products.Type ORDER BY Products.Quantity DESC";
                 var cmd = new SqlCommand(query, conn);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                        Console.WriteLine($"{reader["Type"]} {reader["TotalQuantity"]}");
                     }
 
                 }
@@ -573,14 +707,14 @@ namespace Warehouse
             using (SqlConnection conn = new SqlConnection(StrConn))
             {
                 conn.Open();
-                var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                var query = "SELECT TOP 1 Products.Type, SUM(Products.Quantity) AS TotalQuantity FROM Products GROUP BY Products.Type ORDER BY Products.Quantity";
                 var cmd = new SqlCommand(query, conn);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                        Console.WriteLine($"{reader["Type"]} {reader["TotalQuantity"]}");
                     }
 
                 }
@@ -594,17 +728,23 @@ namespace Warehouse
         void DisplaySupplyPassedQuantity()
         {
             Console.Clear();
+
+            Console.Write("Enter the date: ");
+            SqlDateTime date = SqlDateTime.Parse(Console.ReadLine());
+
+            Console.WriteLine();
+
             using (SqlConnection conn = new SqlConnection(StrConn))
             {
                 conn.Open();
-                var query = "SELECT Products.Type, AVG(Products.Quantity) AS 'AverageQuantity' FROM Products GROUP BY Products.Type;";
+                var query = "SELECT * FROM Products WHERE DATEDIFF(DAY, Products.DateOfDelevery, GETDATE()) >= @date;";
                 var cmd = new SqlCommand(query, conn);
-
+                cmd.Parameters.AddWithValue("@date", date);
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine($"{reader["Type"]} {reader["AverageQuantity"]}");
+                        Console.WriteLine($"{reader["Id"]} {reader["Name"]} {reader["Type"]} {reader["Quantity"]} {reader["PrimeCost"]} {reader["DateOfDelivery"]}");
                     }
 
                 }
